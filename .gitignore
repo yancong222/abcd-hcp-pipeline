@@ -2,3 +2,4 @@
 .nfs*
 __pycache__/
 build_and_zip_my_image.sh
+docs/_build/*

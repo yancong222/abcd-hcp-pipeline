@@ -1,3 +1,6 @@
+"""Helper functions for reading data, calculating parameters, etc.
+"""
+
 import os
 import re
 
@@ -7,9 +10,9 @@ from bids.layout import BIDSLayout
 
 
 def read_bids_dataset(bids_input, subject_list=None, collect_on_subject=False):
-    """
-    extracts and organizes relevant metadata from a bids dataset necessary
+    """extracts and organizes relevant metadata from a bids dataset necessary 
     for the dcan-modified hcp fmri processing pipeline.
+
     :param bids_input: path to input bids folder
     :param subject_list: EITHER, a list of subject ids to filter on,
     OR a dictionary of subject id: list of sessions to filter on.
@@ -56,8 +59,8 @@ def read_bids_dataset(bids_input, subject_list=None, collect_on_subject=False):
             subsess += list(product([s], sessions))
 
     assert len(subsess), 'bids data not found for participants. If labels ' \
-            'were provided, check the participant labels for errors.  ' \
-            'Otherwise check that the bids folder provided is correct.'
+        'were provided, check the participant labels for errors.  ' \
+        'Otherwise check that the bids folder provided is correct.'
 
     for subject, sessions in subsess:
         # get relevant image modalities
@@ -79,9 +82,9 @@ def read_bids_dataset(bids_input, subject_list=None, collect_on_subject=False):
 
 
 def set_anatomicals(layout, subject, sessions):
-    """
-    returns dictionary of anatomical (T1w, T2w) filepaths and associated
+    """returns dictionary of anatomical (T1w, T2w) filepaths and associated 
     metadata.
+
     :param subject: participant labels.
     :param sessions: iterable of session labels.
     """
@@ -105,8 +108,8 @@ def set_anatomicals(layout, subject, sessions):
 
 
 def set_functionals(layout, subject, sessions):
-    """
-    returns dictionary of bold filepaths and associated metadata.
+    """returns dictionary of bold filepaths and associated metadata.
+
     :param subject: participant labels.
     :param sessions: iterable of session labels.
     """
@@ -122,9 +125,9 @@ def set_functionals(layout, subject, sessions):
 
 
 def set_fieldmaps(layout, subject, sessions):
-    """
-    returns dictionary of fieldmap (epi or magnitude) filepaths and 
+    """returns dictionary of fieldmap (epi or magnitude) filepaths and 
     associated metadata.
+
     :param subject: participant labels.
     :param sessions: iterable of session labels.
     """
@@ -160,9 +163,9 @@ def set_fieldmaps(layout, subject, sessions):
 
 
 def get_readoutdir(metadata):
-    """
-    get readout direction from bids metadata.  !!Note that this method only
+    """get readout direction from bids metadata.  !!Note that this method only 
     applies where the nifti orientation is RAS!!
+
     :param metadata: grabbids metadata dict.
     :return: unwarp dir in cartesian (world) coordinates.
     """
@@ -187,10 +190,12 @@ def get_readoutdir(metadata):
 
 
 def get_realdwelltime(metadata):
-    """
-    attempts to compute real dwell time from metadata fields. Certain 
+    """attempts to compute real dwell time from metadata fields. Certain 
     reconstruction parameters such as phaseOversampling and phaseResolution
     may not be accounted for.
+
+    :param metadata: BIDS sidecar json as dict
+    :return: computed dwell time
     """
     pBW = metadata['PixelBandwidth']
     num_steps = metadata['AcquisitionMatrixPE']
@@ -243,8 +248,8 @@ def get_taskname(filename):
 
 
 def ijk_to_xyz(vec, patient_orientation=None):
-    """
-    converts canonical quaternion unit vector symbols to cartesian.
+    """converts canonical quaternion unit vector symbols to cartesian.
+
     :param vec: one of i, j, k +/-
     :return: x, y, or z +/-
     """
@@ -255,10 +260,11 @@ def ijk_to_xyz(vec, patient_orientation=None):
 
 
 def validate_config(bids_spec, ignore_modalities):
-    """
-    function for all preliminary data checks.
+    """function for all preliminary data checks.
+
     :param bids_spec: spec returned from get_bids_data
     :param kwargs: any relevant arguments from command line inputs.
+    :return: None
     """
     modes = bids_spec['types']
     t1w = 'T1w' in modes
@@ -272,6 +278,8 @@ def validate_config(bids_spec, ignore_modalities):
               'Skipping dwi...')
 
 def validate_license(freesurfer_license):
+    """checks for a valid freesurfer license file
+    """
     fshome = os.environ['FREESURFER_HOME']
     license_txt = os.path.join(fshome, 'license.txt')
     if freesurfer_license is None:
