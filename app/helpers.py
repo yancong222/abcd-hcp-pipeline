@@ -183,12 +183,53 @@ def set_fieldmaps(layout, subject, sessions):
                     'positive': [fmap_metadata[i] for i in positive],
                     'negative': [fmap_metadata[i] for i in negative]}
     #should we just check for one here? and then have the len(types) figure out the rest?
+    elif 'phasediff' and 'magnitude1' and 'magnitude2' in types:
+        if len(types) != 3:
+            print("""
+            The pipeline must choose distortion correction method based on the
+            type(s) of field maps available. Please choose either spin echo (epi)
+            or magnitude/phasediff/phase fieldmaps. When using phasediff and magnitude
+            field maps, there must be three total types of field maps (phasediff,
+            magnitude1, and magnitude2). Please make sure all three
+            types are present, and make sure the corresponding json files
+            have 'IntendedFor' values.
+            """)
+            raise Exception('Too many field map types found with phasediff: %s' % types)
+        else:
+            #We have phase - and nothing else - so sort its data.
+
+            # Get indices of phase/mag files from fmap, but make an integer not a list
+
+            phasediff = [i for i, x in enumerate(fmap) if 'phasediff' == x.entities['suffix']]
+            magnitude1 = [i for i, x in enumerate(fmap) if 'magnitude1' == x.entities['suffix']]
+            magnitude2 = [i for i, x in enumerate(fmap) if 'magnitude2' == x.entities['suffix']]
+
+            EchoTimes = []
+            for x in fmap_metadata:
+                EchoTimes += [x['EchoTime']]
+            UniqueEchoTimes = set(EchoTimes)
+            if len(UniqueEchoTimes) != 2:
+                raise Exception('Irregular number of EchoTimes: %s' % UniqueEchoTimes)
+
+            if fmap_metadata[magnitude1[0]]['EchoTime'] != min(UniqueEchoTimes):
+                raise Exception('mag1 EchoTime larger than mag2')
+            if fmap_metadata[magnitude2[0]]['EchoTime'] != max(UniqueEchoTimes):
+                raise Exception('mag2 EchoTime smaller than mag1')
+
+            fmap = {'phasediff': [fmap[phasediff[0]].path],
+                    'magnitude1': [fmap[magnitude1[0]].path],
+                    'magnitude2': [fmap[magnitude2[0]].path]}
+            fmap_metadata = {
+                    'phasediff': [fmap_metadata[phasediff[0]]],
+                    'magnitude1': [fmap_metadata[magnitude1[0]]],
+                    'magnitude2': [fmap_metadata[magnitude2[0]]]}
+
     elif 'phase1' and 'phase2' and 'magnitude1' and 'magnitude2' in types:
         if len(types) != 4: #change the print output here
             print("""
             The pipeline must choose distortion correction method based on the
             type(s) of field maps available. Please choose either spin echo (epi)
-            or magnitude/phasediff fieldmaps. When using phase and magnitude
+            or magnitude/phasediff/phase fieldmaps. When using phase and magnitude
             field maps, there must be four total types of field maps (phase1,
             phase2, magnitude1, and magnitude2). Please make sure all four
             types are present, and make sure the corresponding json files
