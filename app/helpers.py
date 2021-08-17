@@ -204,18 +204,6 @@ def set_fieldmaps(layout, subject, sessions):
             magnitude1 = [i for i, x in enumerate(fmap) if 'magnitude1' == x.entities['suffix']]
             magnitude2 = [i for i, x in enumerate(fmap) if 'magnitude2' == x.entities['suffix']]
 
-            EchoTimes = []
-            for x in fmap_metadata:
-                EchoTimes += [x['EchoTime']]
-            UniqueEchoTimes = set(EchoTimes)
-            if len(UniqueEchoTimes) != 2:
-                raise Exception('Irregular number of EchoTimes: %s' % UniqueEchoTimes)
-
-            if fmap_metadata[magnitude1[0]]['EchoTime'] != min(UniqueEchoTimes):
-                raise Exception('mag1 EchoTime larger than mag2')
-            if fmap_metadata[magnitude2[0]]['EchoTime'] != max(UniqueEchoTimes):
-                raise Exception('mag2 EchoTime smaller than mag1')
-
             fmap = {'phasediff': [fmap[phasediff[0]].path],
                     'magnitude1': [fmap[magnitude1[0]].path],
                     'magnitude2': [fmap[magnitude2[0]].path]}
@@ -244,22 +232,6 @@ def set_fieldmaps(layout, subject, sessions):
             phase2 = [i for i, x in enumerate(fmap) if 'phase2' == x.entities['suffix']]
             magnitude1 = [i for i, x in enumerate(fmap) if 'magnitude1' == x.entities['suffix']]
             magnitude2 = [i for i, x in enumerate(fmap) if 'magnitude2' == x.entities['suffix']]
-
-            EchoTimes = []
-            for x in fmap_metadata:
-                EchoTimes += [x['EchoTime']]
-            UniqueEchoTimes = set(EchoTimes)
-            if len(UniqueEchoTimes) != 2:
-                raise Exception('Irregular number of EchoTimes: %s' % UniqueEchoTimes)
-
-            if fmap_metadata[phase1[0]]['EchoTime'] != min(UniqueEchoTimes):
-                raise Exception('phase1 EchoTime larger than phase2')
-            if fmap_metadata[phase2[0]]['EchoTime'] != max(UniqueEchoTimes):
-                raise Exception('phase2 EchoTime smaller than phase1')
-            if fmap_metadata[magnitude1[0]]['EchoTime'] != min(UniqueEchoTimes):
-                raise Exception('mag1 EchoTime larger than mag2')
-            if fmap_metadata[magnitude2[0]]['EchoTime'] != max(UniqueEchoTimes):
-                raise Exception('mag2 EchoTime smaller than mag1')
 
             fmap = {'phase1': [fmap[phase1[0]].path],
                     'phase2': [fmap[phase2[0]].path],
